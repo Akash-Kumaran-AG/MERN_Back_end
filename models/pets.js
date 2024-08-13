@@ -1,12 +1,16 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-    name : String, 
-    age : Number,
+    username : String,
+    email:String, 
+    petname:String,
+    petage : Number,
     breed :String,
+    gender : String,
     contact :Number,
+    Imgurl:String,
 })
 
-const petModel = mongoose.model("PETS", userSchema);
+const petModel = mongoose.model("total", userSchema);
 
 module.exports = petModel;

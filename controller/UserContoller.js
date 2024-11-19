@@ -2,6 +2,7 @@ const userModel = require("../models/user");
 const petModel = require("../models/pets");
 const { response } = require("express");
 const finalModel = require("../models/final");
+const nodemailer = require('nodemailer');
 const create = async (req, res) => {
   try {
     const userDetails = new userModel(req.body);
@@ -90,17 +91,51 @@ const fetch = async (req, res) => {
   }
 };
 
+// const createPet = async (req, res) => {
+//   try {
+//     const userDetails = new petModel(req.body);
+//     // const { email } = userDetails;
+//     // const isExist = await userModel.findOne({  });
+//     // if (isExist) {
+//     //   return res.status(400).json({ message: "user already exists" });
+//     // }
+//     const newUser = await userDetails.save();
+//     res.status(200).json(newUser);
+//   } catch {
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
 const createPet = async (req, res) => {
   try {
     const userDetails = new petModel(req.body);
-    // const { email } = userDetails;
-    // const isExist = await userModel.findOne({  });
-    // if (isExist) {
-    //   return res.status(400).json({ message: "user already exists" });
-    // }
+
+    // Save the new pet to the database
     const newUser = await userDetails.save();
+
+    // Set up the transporter for sending the email
+    const transporter = nodemailer.createTransport({
+      service: 'gmail', // Use your email service
+      auth: {
+        user: 'jeevajeevag123@gmail.com', // Your email address
+        pass: 'rbnr lrge abvz tpxv',  // Your email password or app-specific password
+      },
+    });
+
+    // Configure the email options
+    const mailOptions = {
+      from: 'jeevajeevag123@gmail.com', // Sender's email address
+      to: req.body.email,           // Recipient's email address
+      subject: 'Pet Creation Success',
+      text: `Hello ${req.body.username},\n\nYour pet ${req.body.petname} has been successfully added to our database!`,
+    };
+
+    // Send the email
+    await transporter.sendMail(mailOptions);
+
+    // Respond with the newly created user details
     res.status(200).json(newUser);
-  } catch {
+  } catch (error) {
+    console.error("Error creating pet or sending email:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
